@@ -14,8 +14,8 @@ public class SlopeLine { //<>//
     unitCircleCoord = new PVector(
       lineLength/2 * cos(atan(slope)), 
       lineLength/2 * sin(atan(slope)));
-      //unitCircleCoord = new PVector(0,0);
-      
+    //unitCircleCoord = new PVector(0,0);
+
     Vec2 coord1 = new Vec2(
       box2d.scalarPixelsToWorld(unitCircleCoord.x/2), 
       box2d.scalarPixelsToWorld(unitCircleCoord.y/2));
@@ -25,7 +25,7 @@ public class SlopeLine { //<>//
 
     EdgeShape slopeLine = new EdgeShape();
     slopeLine.set(coord1, coord2);
-    
+
     FixtureDef fd = new FixtureDef();
     fd.shape = slopeLine;
     fd.density = 1;
@@ -42,5 +42,9 @@ public class SlopeLine { //<>//
       pos.y*2 + unitCircleCoord.y, 
       pos.x*2 + unitCircleCoord.x, 
       pos.y*2 - unitCircleCoord.y);
+  }
+
+  void killBody() {
+    box2d.destroyBody(body);
   }
 }

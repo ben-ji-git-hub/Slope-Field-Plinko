@@ -1,4 +1,5 @@
-import shiffman.box2d.*; //<>//
+import g4p_controls.*; //<>//
+import shiffman.box2d.*;
 import org.qscript.*;
 import org.jbox2d.collision.shapes.*;
 import org.jbox2d.common.*;
@@ -9,24 +10,23 @@ private int rows, cols, scl, window, level;
 private float lineLength, tickLength, charOffset;
 private Float slope;
 private boolean advanceLevel, timePause;
-
+//public String DiffEQ;
 Vec2[][] levelData;
 
 SlopeLine[][] slopeLines;
-//Ball[] balls;
 Script solver;
 Ball ball;
 Hole hole;
 Box2DProcessing box2d;
 
 void setup() {
-  size(800, 800);
+  size(800, 900, JAVA2D);
   background(0);
   frameRate(60);
   box2d = new Box2DProcessing(this);
   box2d.createWorld();  
   box2d.listenForCollisions();
-
+  createGUI();
   window = 800;
   scl = 50;
   rows = window/scl;
@@ -37,28 +37,11 @@ void setup() {
   level = 0;
   advanceLevel = false;
   timePause = true;
+  //DiffEQ = "-1";
 
   solver = new Script("");
   slopeLines = new SlopeLine[cols-1][rows-1];
-  //balls = new Ball[14];
   levelData = new Vec2[6][2];
-  drawAxes();  
-  for (int y = 1; y < cols; y++) {
-    for (int x = 1; x < rows; x++) {
-      int xCartesian = x - rows/2;
-      int yCartesian = -y + cols/2;
-      slope = getSlope("-1", xCartesian, yCartesian);
-      if (slope.toString().equals("NaN"))
-        slopeLines[y-1][x-1] = null;
-      else {
-        slopeLines[y-1][x-1] = new SlopeLine(x*scl, y*scl, slope);
-        slopeLines[y-1][x-1].display();
-      }
-    }
-  }
-  //for(int i = 1; i<=13; i++) {
-  //   balls[i] = new Ball(300+3*i, 5); 
-  //}
 
   levelData[0][0] = new Vec2(window-1/2*scl-30, 0);
   levelData[0][1] = new Vec2(window-1/2*scl-30, window-3/2*scl);
@@ -89,6 +72,9 @@ void draw() {
   if (advanceLevel)
     advanceLevel();
 
+  if (timePause) {
+  }
+
   drawAxes();
   for (int y = 1; y < cols; y++) {
     for (int x = 1; x < rows; x++) {
@@ -97,27 +83,41 @@ void draw() {
     }
   }
   ball.display();
-  //for(int i = 1; i<=13; i++) {
-  //   balls[i].display(); 
-  //}
   hole.display();
 }
 
 void drawAxes() {
-  stroke(70);
-  textSize(10);
+  for (int x = 1; x < cols; x++) {
+    stroke(25);
+    line(0, x*scl, window, x*scl);
+    line(x*scl, 0, x*scl, window);
+  }
+  
+  stroke(150);
   line(0, window/2, window, window/2);
   line(window/2, 0, window/2, window);
-  noFill();
-  rect(0, 0, window, window);
+  
   for (int x = 1; x < cols; x++) {
+    noFill();
+    stroke(250);
     line(x*scl, (window-tickLength)/2, x*scl, (window+tickLength)/2);
     line((window-tickLength)/2, x*scl, (window+tickLength)/2, x*scl);
 
+    fill(250);
+    textSize(10);
     textAlign(CENTER, CENTER);
-    text(x - rows/2, x*scl, window/2 + charOffset);
-    text(-x + cols/2, window/2 - charOffset, x*scl);
+    if(x != rows/2)
+      text(x - rows/2, x*scl, window/2 + charOffset);
+    if(x != cols/2)
+      text(-x + cols/2, window/2 - charOffset, x*scl);    
   }
+  text(0, window/2 - charOffset/2, window/2 + charOffset/2);
+  textSize(20);
+  text("Current Level:" + level, window/2, scl/2);
+  
+  textSize(15);
+  text("a= " + Math.round(1000.0*a)/1000.0, 100-7*charOffset/4, 868);
+  text("b= " + Math.round(1000.0*b)/1000.0, 700+7*charOffset/4, 868);
 }
 
 void beginContact(Contact cp) {
@@ -131,17 +131,9 @@ void beginContact(Contact cp) {
   // Get our objects that reference these bodies
   Object o1 = b1.getUserData();
   Object o2 = b2.getUserData();
-  if (o1==null || o2==null) {
-    //println(o1.getClass());
-    //println(Ball.class);
-    //println(o2.getClass());
+  if (o1==null || o2==null)
     return;
-  }
-  //if (o1.getClass() == Ball.class && o2.getClass() == SlopeLine.class) {
-  //  println("collide");
-  //  println(o1.getClass());
-  //  println(o2.getClass());
-  //}
+
   if (o1.getClass() == Ball.class && o2.getClass() == Hole.class) {
     advanceLevel = true;
   }
@@ -150,7 +142,7 @@ void beginContact(Contact cp) {
 void endContact(Contact cp) {
 }
 
-public Float getSlope(String DiffEQ, float x, float y) {
+public Float getSlope(String DiffEQ, float x, float y, float a, float b) {
   String[] code = {
     "yprime = " + DiffEQ };
 
@@ -158,7 +150,10 @@ public Float getSlope(String DiffEQ, float x, float y) {
   solver.parse();
 
   solver.storeVariable("x", x);
-  solver.storeVariable("y", y);  
+  solver.storeVariable("y", y);
+  solver.storeVariable("a", a);
+  solver.storeVariable("b", b);  
+
   solver.evaluate();
   return solver.getVariable("yprime").toFloat();
 }
@@ -166,15 +161,42 @@ public Float getSlope(String DiffEQ, float x, float y) {
 void advanceLevel() {
   hole.killBody();
   ball.killBody();
-  ball = new Ball(levelData[level+1][0].x, 5);
-  hole = new Hole(levelData[level+1][1], 17);
   level++;
-  println("collide");
+  ball = new Ball(levelData[level][0].x, 5);
+  hole = new Hole(levelData[level][1], 17);
   advanceLevel = false;
   timePause = true;
 }
 
+void resetLevel() {
+  hole.killBody();
+  ball.killBody();
+  ball = new Ball(levelData[level][0].x, 5);
+  hole = new Hole(levelData[level][1], 17);
+  timePause = true;
+}
+
+void generateSlopeField(String DiffEQ, float a, float b) {
+  for (int y = 1; y < cols; y++) {
+    for (int x = 1; x < rows; x++) {
+      int xCartesian = x - rows/2;
+      int yCartesian = -y + cols/2;
+      slope = getSlope(DiffEQ, xCartesian, yCartesian, a, b);
+      //println(slopeLines[y-1][x-1].getClass()); 
+        //slopeLines[y-1][x-1].killBody();
+      if (slope.toString().equals("NaN"))
+        slopeLines[y-1][x-1] = null;
+      else {
+        slopeLines[y-1][x-1] = new SlopeLine(x*scl, y*scl, slope);
+      }
+    }
+  }
+}
 void keyPressed() {
-  if (key == ' '); //spacebar
-  timePause = !timePause;
+  if (key == ' ') //spacebar
+    timePause = !timePause;
+  //if (key == ENTER) {
+  //  timePause = true;
+  //  resetLevel();
+  //}
 }
