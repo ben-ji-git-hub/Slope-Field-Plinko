@@ -31,6 +31,7 @@ void setup() {
   box2d.createWorld();  
   box2d.listenForCollisions();
   createGUI();
+  customGUI();
   window = 800;
   scl = 50;
   rows = window/scl;
@@ -41,7 +42,7 @@ void setup() {
   level = 0;
   advanceLevel = false;
   timePause = true;
-  //DiffEQ = "-1";
+  DiffEQ = "-1";
 
   solver = new Script("");
   slopeLines = new SlopeLine[cols-1][rows-1];
@@ -68,7 +69,6 @@ void setup() {
 
 void draw() {
   background(0);
-  println(PFont.list());
   if (!timePause)
     for (int i = 0; i < 1; i++)
       box2d.step();
@@ -202,8 +202,33 @@ void generateSlopeField(String DiffEQ, float a, float b) {
 void keyPressed() {
   if (key == ' ') //spacebar
     timePause = !timePause;
-  //if (key == ENTER) {
-  //  timePause = true;
-  //  resetLevel();
-  //}
+  switch(keyCode) {
+  case LEFT:
+    a--;
+    slider1.setValue((float) Math.cbrt(a));
+    generateSlopeField(DiffEQ, a, b);
+    break;
+  case RIGHT: 
+    a++;
+    slider1.setValue((float) Math.cbrt(a));
+    generateSlopeField(DiffEQ, a, b);
+    break;
+  case DOWN:
+    b--;
+    slider2.setValue((float) Math.cbrt(b));
+    generateSlopeField(DiffEQ, a, b);
+    break;
+  case UP:
+    b++;
+    slider2.setValue((float) Math.cbrt(b));
+    generateSlopeField(DiffEQ, a, b);
+    break;
+  }
+  if (a>100) a = 100;
+  if (a<-100) a = -100;
+  if (b>100) b = 100;
+  if (b<-100) b = -100;
+}
+void customGUI() {
+  DIFF_EQ.setFont(new Font("Cambria", Font.PLAIN, 20));
 }
