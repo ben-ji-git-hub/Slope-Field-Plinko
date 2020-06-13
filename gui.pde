@@ -13,8 +13,7 @@
  * Do not rename this tab!
  * =========================================================
  */
-public float a = 1, b = 1;
-String DiffEQ; 
+
 public void DIFF_EQ_entered(GTextField source, GEvent event) { //_CODE_:DIFF_EQ:858581:
   if (event == GEvent.ENTERED) {
     timePause = true;
@@ -26,6 +25,8 @@ public void DIFF_EQ_entered(GTextField source, GEvent event) { //_CODE_:DIFF_EQ:
 
 public void slider1_change1(GSlider source, GEvent event) { //_CODE_:slider1:528910:
   a = (float) ((Math.pow(Double.valueOf(source.getValueS()), 3.0)));
+  if (a>99) a=100.00;
+  if (a<-99) a=-100.00;
   timePause = true;
   resetLevel();
   generateSlopeField(DiffEQ, a, b);
@@ -33,6 +34,8 @@ public void slider1_change1(GSlider source, GEvent event) { //_CODE_:slider1:528
 
 public void slider2_change1(GSlider source, GEvent event) { //_CODE_:slider2:623745:
   b = (float) ((Math.pow(Double.valueOf(source.getValueS()), 3.0)));
+  if (b>99) b=100.00;
+  if (b<-99) b=-100.00;
   timePause = true;
   resetLevel();
   generateSlopeField(DiffEQ, a, b);
@@ -52,6 +55,7 @@ public void createGUI() {
   DIFF_EQ.setLocalColorScheme(GCScheme.RED_SCHEME);
   DIFF_EQ.setOpaque(false);
   DIFF_EQ.addEventHandler(this, "DIFF_EQ_entered");
+  DIFF_EQ.setFont(new Font("Cambria", Font.PLAIN, 20));
   slider1 = new GSlider(this, 100, 850, 290, 40, 10.0);
   slider1.setLimits(0.0, -4.6415887, 4.6415887);
   slider1.setNbrTicks(999);

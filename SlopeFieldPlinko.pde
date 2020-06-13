@@ -1,4 +1,6 @@
-import g4p_controls.*; //<>//
+import java.awt.Font; //<>//
+import java.awt.*;
+import g4p_controls.*;
 import shiffman.box2d.*;
 import org.qscript.*;
 import org.jbox2d.collision.shapes.*;
@@ -7,10 +9,11 @@ import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.contacts.*;
 
 private int rows, cols, scl, window, level;
-private float lineLength, tickLength, charOffset;
+private float lineLength, tickLength, charOffset, a, b;
 private Float slope;
-private boolean advanceLevel, timePause;
-//public String DiffEQ;
+private boolean advanceLevel, timePause; 
+String DiffEQ; 
+PFont f;
 Vec2[][] levelData;
 
 SlopeLine[][] slopeLines;
@@ -20,6 +23,7 @@ Hole hole;
 Box2DProcessing box2d;
 
 void setup() {
+  f = createFont("CAMBRIA MATH", 15);
   size(800, 900, JAVA2D);
   background(0);
   frameRate(60);
@@ -64,7 +68,7 @@ void setup() {
 
 void draw() {
   background(0);
-
+  println(PFont.list());
   if (!timePause)
     for (int i = 0; i < 1; i++)
       box2d.step();
@@ -92,11 +96,11 @@ void drawAxes() {
     line(0, x*scl, window, x*scl);
     line(x*scl, 0, x*scl, window);
   }
-  
+
   stroke(150);
   line(0, window/2, window, window/2);
   line(window/2, 0, window/2, window);
-  
+
   for (int x = 1; x < cols; x++) {
     noFill();
     stroke(250);
@@ -106,18 +110,21 @@ void drawAxes() {
     fill(250);
     textSize(10);
     textAlign(CENTER, CENTER);
-    if(x != rows/2)
+    if (x != rows/2)
       text(x - rows/2, x*scl, window/2 + charOffset);
-    if(x != cols/2)
-      text(-x + cols/2, window/2 - charOffset, x*scl);    
+    if (x != cols/2)
+      text(-x + cols/2, window/2 - charOffset, x*scl);
   }
   text(0, window/2 - charOffset/2, window/2 + charOffset/2);
-  textSize(20);
-  text("Current Level:" + level, window/2, scl/2);
-  
   textSize(15);
-  text("a= " + Math.round(1000.0*a)/1000.0, 100-7*charOffset/4, 868);
-  text("b= " + Math.round(1000.0*b)/1000.0, 700+7*charOffset/4, 868);
+  text("Level " + (level+1), scl, scl/2);
+
+  textSize(15);
+  textFont(f);
+  text("a = " + Math.round(1000.0*a)/1000.0, 100-7*charOffset/4, 868);
+  text("b = " + Math.round(1000.0*b)/1000.0, 700+7*charOffset/4, 868);
+  textSize(25);
+  text("y' = ", 100-charOffset, 825);
 }
 
 void beginContact(Contact cp) {
@@ -182,8 +189,8 @@ void generateSlopeField(String DiffEQ, float a, float b) {
       int xCartesian = x - rows/2;
       int yCartesian = -y + cols/2;
       slope = getSlope(DiffEQ, xCartesian, yCartesian, a, b);
-      //println(slopeLines[y-1][x-1].getClass()); 
-        //slopeLines[y-1][x-1].killBody();
+      if (slopeLines[y-1][x-1] != null) 
+        slopeLines[y-1][x-1].killBody();
       if (slope.toString().equals("NaN"))
         slopeLines[y-1][x-1] = null;
       else {
