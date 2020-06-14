@@ -23,7 +23,7 @@ public void DIFF_EQ_changed(GTextField source, GEvent event) { //_CODE_:DIFF_EQ:
 } //_CODE_:DIFF_EQ:858581:
 
 public void slider1_change1(GSlider source, GEvent event) { //_CODE_:slider1:528910:
-  //a = (float) Math.pow(source.getValueF(), 3.0);
+  a = (float) Math.pow(source.getValueF(), 3.0);
   if (a>99) a=100.00;
   if (a<-99) a=-100.00;
   timePause = true;
@@ -32,7 +32,7 @@ public void slider1_change1(GSlider source, GEvent event) { //_CODE_:slider1:528
 } //_CODE_:slider1:528910:
 
 public void slider2_change1(GSlider source, GEvent event) { //_CODE_:slider2:623745:
-  //b = (float) Math.pow(source.getValueF(), 3.0);
+  b = (float) Math.pow(source.getValueF(), 3.0);
   if (b>99) b=100.00;
   if (b<-99) b=-100.00;
   timePause = true;

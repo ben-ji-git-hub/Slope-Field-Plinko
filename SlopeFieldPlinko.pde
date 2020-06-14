@@ -12,6 +12,7 @@ private int rows, cols, scl, window, level;
 private float lineLength, tickLength, charOffset, a, b;
 private Float slope;
 private boolean advanceLevel, timePause; 
+boolean shiftPressed;
 String DiffEQ; 
 PFont f;
 Vec2[][] levelData;
@@ -202,33 +203,59 @@ void generateSlopeField(String DiffEQ, float a, float b) {
 void keyPressed() {
   if (key == ' ') //spacebar
     timePause = !timePause;
-  switch(keyCode) {
-  case LEFT:
-    a--;
-    slider1.setValue((float) Math.cbrt(a));
-    generateSlopeField(DiffEQ, a, b);
-    break;
-  case RIGHT: 
-    a++;
-    slider1.setValue((float) Math.cbrt(a));
-    generateSlopeField(DiffEQ, a, b);
-    break;
-  case DOWN:
-    b--;
-    slider2.setValue((float) Math.cbrt(b));
-    generateSlopeField(DiffEQ, a, b);
-    break;
-  case UP:
-    b++;
-    slider2.setValue((float) Math.cbrt(b));
-    generateSlopeField(DiffEQ, a, b);
-    break;
-  }
+  //println(a);
+  //println(b);
+  //println(keyCode);
+
+  if (keyCode == SHIFT)
+    shiftPressed = true;
+//println(shiftPressed);
+//  println(key);
+//  println(keyCode);
+//  println("______");
   if (a>100) a = 100;
   if (a<-100) a = -100;
   if (b>100) b = 100;
   if (b<-100) b = -100;
 }
+
 void customGUI() {
   DIFF_EQ.setFont(new Font("Cambria", Font.PLAIN, 20));
+}
+
+void keyReleased() {
+  if (keyCode == SHIFT)
+    shiftPressed = false;
+  if (keyCode != SHIFT && shiftPressed)
+    shiftPressed = true;
+  //println(shiftPressed);
+  //println(key);
+  //println(keyCode);
+  //println("______");
+  if (!shiftPressed) {
+    if (keyCode == DOWN) {
+      a--;
+      slider1.setValue((float) Math.cbrt(a));
+      generateSlopeField(DiffEQ, a, b);
+    }
+    if (keyCode == UP) {
+      a++;
+      slider1.setValue((float) Math.cbrt(a));
+      generateSlopeField(DiffEQ, a, b);
+    }
+  }
+
+  if (shiftPressed) {
+    if (keyCode == DOWN) {
+      b = (int) b-1;
+      slider2.setValue((float) Math.cbrt(b));
+      generateSlopeField(DiffEQ, a, b);
+    }
+    if (keyCode == UP)
+    {
+      b = (int) b+1;
+      slider2.setValue((float) Math.cbrt(b));
+      generateSlopeField(DiffEQ, a, b);
+    }
+  }
 }
