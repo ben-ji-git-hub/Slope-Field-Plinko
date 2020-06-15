@@ -8,19 +8,22 @@ import org.jbox2d.common.*;
 import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.contacts.*;
 
-private int rows, cols, scl, window, level;
-private float lineLength, tickLength, charOffset, a, b;
-private Float slope;
-private boolean advanceLevel, timePause; 
-boolean shiftPressed;
+int rows, cols, scl, window, level;
+float lineLength, tickLength, charOffset, a, b;
+Float slope;
+enum Screens {
+  MENU, HELP, CLASSIC_MODE, DUCK_HUNT
+}
+boolean advanceLevel, timePause, shiftPressed;
 String DiffEQ; 
 PFont f;
-Vec2[][] levelData;
 
+Vec2[][] levelData;
 SlopeLine[][] slopeLines;
 Script solver;
 Ball ball;
 Hole hole;
+Screens screen;
 Box2DProcessing box2d;
 
 void setup() {
@@ -48,6 +51,7 @@ void setup() {
   solver = new Script("");
   slopeLines = new SlopeLine[cols-1][rows-1];
   levelData = new Vec2[6][2];
+  screen = Screens.MENU;
 
   levelData[0][0] = new Vec2(window-1/2*scl-30, 0);
   levelData[0][1] = new Vec2(window-1/2*scl-30, window-3/2*scl);
@@ -70,25 +74,36 @@ void setup() {
 
 void draw() {
   background(0);
-  if (!timePause)
-    for (int i = 0; i < 1; i++)
-      box2d.step();
+  println(screen);
+  switch(screen) {
+  case MENU:
+  break;
+  case HELP:
+  break;
+  case CLASSIC_MODE:
+    if (!timePause)
+      for (int i = 0; i < 1; i++)
+        box2d.step();
 
-  if (advanceLevel)
-    advanceLevel();
+    if (advanceLevel)
+      advanceLevel();
 
-  if (timePause) {
-  }
-
-  drawAxes();
-  for (int y = 1; y < cols; y++) {
-    for (int x = 1; x < rows; x++) {
-      if (slopeLines[y-1][x-1] != null)
-        slopeLines[y-1][x-1].display();
+    if (timePause) {
     }
+
+    drawAxes();
+    for (int y = 1; y < cols; y++) {
+      for (int x = 1; x < rows; x++) {
+        if (slopeLines[y-1][x-1] != null)
+          slopeLines[y-1][x-1].display();
+      }
+    }
+    ball.display();
+    hole.display();
+    break;
+  case DUCK_HUNT:
+  break;
   }
-  ball.display();
-  hole.display();
 }
 
 void drawAxes() {
@@ -118,7 +133,7 @@ void drawAxes() {
   }
   text(0, window/2 - charOffset/2, window/2 + charOffset/2);
   textSize(15);
-  text("Level " + (level+1), scl, scl/2);
+  text("Level " + (level+1), 3*scl/2, scl/2);
 
   textSize(15);
   textFont(f);
@@ -203,24 +218,12 @@ void generateSlopeField(String DiffEQ, float a, float b) {
 void keyPressed() {
   if (key == ' ') //spacebar
     timePause = !timePause;
-  //println(a);
-  //println(b);
-  //println(keyCode);
-
   if (keyCode == SHIFT)
     shiftPressed = true;
-//println(shiftPressed);
-//  println(key);
-//  println(keyCode);
-//  println("______");
   if (a>100) a = 100;
   if (a<-100) a = -100;
   if (b>100) b = 100;
   if (b<-100) b = -100;
-}
-
-void customGUI() {
-  DIFF_EQ.setFont(new Font("Cambria", Font.PLAIN, 20));
 }
 
 void keyReleased() {
@@ -228,10 +231,6 @@ void keyReleased() {
     shiftPressed = false;
   if (keyCode != SHIFT && shiftPressed)
     shiftPressed = true;
-  //println(shiftPressed);
-  //println(key);
-  //println(keyCode);
-  //println("______");
   if (!shiftPressed) {
     if (keyCode == DOWN) {
       a--;
@@ -258,4 +257,28 @@ void keyReleased() {
       generateSlopeField(DiffEQ, a, b);
     }
   }
+}
+
+String equationCleanup(String DiffEQ) {
+  DiffEQ.replace("ln", "logE");
+  //DiffEQ.replace("e^", "exp(");
+  //DiffEQ.replaceFirst("|", "abs(");
+  //DiffEQ.replaceFirst("|", ")");
+  return DiffEQ;
+}  
+
+void customGUI() {
+  DIFF_EQ.setFont(new Font("Cambria", Font.PLAIN, 20));
+  Duck_Hunt.setFont(new Font("Cambria", Font.BOLD, 30));
+  Help.setFont(new Font("Cambria", Font.BOLD, 30));
+  Classic_Mode.setFont(new Font("Cambria", Font.BOLD, 30));
+  textarea1.setFont(new Font("Arial", Font.PLAIN, 20));
+  Slope_Field_Plinko_Title.setFont(new Font("Arial", Font.BOLD, 40));
+  backButton.setVisible(false);
+  slider1.setVisible(false);
+  slider2.setVisible(false);
+  DIFF_EQ.setVisible(false);
+}
+
+void gameMode() {
 }
