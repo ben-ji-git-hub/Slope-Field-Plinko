@@ -8,18 +8,19 @@ import org.jbox2d.common.*;
 import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.contacts.*;
 
-int rows, cols, scl, window, level;
+int rows, cols, scl, window, level, duckCounter;
 float lineLength, tickLength, charOffset, a, b;
 Float slope;
-enum Screens {
-  MENU, HELP, CLASSIC_MODE, DUCK_HUNT
-}
 boolean advanceLevel, timePause, shiftPressed;
 String DiffEQ; 
 PFont f;
+enum Screens {
+  MENU, HELP, CLASSIC_MODE, DUCK_HUNT
+}
 
-Vec2[][] levelData;
+Vec2[][][][] levelData;
 SlopeLine[][] slopeLines;
+Duck[] ducks;
 Script solver;
 Ball ball;
 Hole hole;
@@ -44,42 +45,85 @@ void setup() {
   tickLength = .2 * scl;
   charOffset = .5 * scl;
   level = 0;
+  duckCounter = 0;
   advanceLevel = false;
   timePause = true;
   DiffEQ = "-1";
 
   solver = new Script("");
   slopeLines = new SlopeLine[cols-1][rows-1];
-  levelData = new Vec2[6][2];
+  ducks = new Duck[5];
   screen = Screens.MENU;
 
-  levelData[0][0] = new Vec2(window-1/2*scl-30, 0);
-  levelData[0][1] = new Vec2(window-1/2*scl-30, window-3/2*scl);
+  /* level data corresponds to: [mode][level][object][velocity]
+   /  mode: 0=Classic, 1=Duck Hunt
+   /  level: 1-5 for each mode
+   /  object: 0=ball, 1=hole, 2-5=ducks
+   /  Ball initial Velocity: x and y components of starting velocity
+   */  levelData = new Vec2[2][5][6][2];
 
-  levelData[1][0] = new Vec2(3*scl, 0);
-  levelData[1][1] = new Vec2(9.6*scl, 11*scl);
+  levelData[0][0][0][0] = new Vec2(window-1/2*scl-30, 0);
+  levelData[0][0][1][0] = new Vec2(window-1/2*scl-30, window-3/2*scl);
 
-  levelData[2][0] = new Vec2(10*scl, 0);
-  levelData[2][1] = new Vec2(15*scl, 15*scl);
+  levelData[0][1][0][0] = new Vec2(3*scl, 0);
+  levelData[0][1][1][0] = new Vec2(9.6*scl, 11*scl);
 
-  levelData[3][0] = new Vec2(150, 0);
-  levelData[3][1] = new Vec2(150, 0);
+  levelData[0][2][0][0] = new Vec2(10*scl, 0);
+  levelData[0][2][1][0] = new Vec2(15*scl, 15*scl);
 
-  levelData[4][0] = new Vec2(150, 0);
-  levelData[4][1] = new Vec2(150, 0);
+  levelData[0][3][0][0] = new Vec2(150, 0);
+  levelData[0][3][1][0] = new Vec2(150, 0);
 
-  ball = new Ball(levelData[level][0].x, 5);
-  hole = new Hole(levelData[level][1], 17);
+  levelData[0][4][0][0] = new Vec2(150, 0);
+  levelData[0][4][1][0] = new Vec2(150, 0);
+  
+  
+  
+  
+  levelData[1][0][0][0] = new Vec2(window-1/2*scl-30, 0);
+  levelData[1][0][1][0] = new Vec2(window-1/2*scl-30, window-3/2*scl);
+  levelData[1][0][2][0] = new Vec2(window-1/2*scl-30, window-3/2*scl);
+  levelData[1][0][1][1] = new Vec2(-3, -5);
+
+
+  levelData[1][1][0][0] = new Vec2(3*scl, 0);
+  levelData[1][1][1][0] = new Vec2(9.6*scl, 11*scl);
+  levelData[1][1][2][0] = new Vec2(window-1/2*scl-30, window-3/2*scl);
+  levelData[1][1][3][0] = new Vec2(window-1/2*scl-30, window-3/2*scl);
+
+  //levelData[1][2][0][0] = new Vec2(10*scl, 0);
+  //levelData[1][2][1][0] = new Vec2(15*scl, 15*scl);
+  //levelData[1][0][1][0] = new Vec2(window-1/2*scl-30, window-3/2*scl);
+  //levelData[1][0][1][0] = new Vec2(window-1/2*scl-30, window-3/2*scl);
+  //levelData[1][0][1][0] = new Vec2(window-1/2*scl-30, window-3/2*scl);
+
+  //levelData[1][3][0][0] = new Vec2(150, 0);
+  //levelData[1][3][1][0] = new Vec2(150, 0);
+  //levelData[1][0][1][0] = new Vec2(window-1/2*scl-30, window-3/2*scl);
+  //levelData[1][0][1][0] = new Vec2(window-1/2*scl-30, window-3/2*scl);
+  //levelData[1][0][1][0] = new Vec2(window-1/2*scl-30, window-3/2*scl);
+  //levelData[1][0][1][0] = new Vec2(window-1/2*scl-30, window-3/2*scl);
+
+  //levelData[1][4][0][0] = new Vec2(150, 0);
+  //levelData[1][4][1][0] = new Vec2(150, 0);
+  //levelData[1][0][1][0] = new Vec2(window-1/2*scl-30, window-3/2*scl);
+  //levelData[1][0][1][0] = new Vec2(window-1/2*scl-30, window-3/2*scl);
+  //levelData[1][0][1][0] = new Vec2(window-1/2*scl-30, window-3/2*scl);
+  //levelData[1][0][1][0] = new Vec2(window-1/2*scl-30, window-3/2*scl);
+  //levelData[1][0][1][0] = new Vec2(window-1/2*scl-30, window-3/2*scl);
+
 }
 
 void draw() {
   background(0);
-  println(screen);
   switch(screen) {
+    
   case MENU:
-  break;
+    break;
+    
   case HELP:
-  break;
+    break;
+    
   case CLASSIC_MODE:
     if (!timePause)
       for (int i = 0; i < 1; i++)
@@ -87,9 +131,6 @@ void draw() {
 
     if (advanceLevel)
       advanceLevel();
-
-    if (timePause) {
-    }
 
     drawAxes();
     for (int y = 1; y < cols; y++) {
@@ -101,9 +142,28 @@ void draw() {
     ball.display();
     hole.display();
     break;
+    
   case DUCK_HUNT:
-  break;
-  }
+  ball.disableGravity();
+    if (!timePause)
+      for (int i = 0; i < 1; i++)
+        box2d.step();
+
+    if (advanceLevel)
+      advanceLevel();
+
+    drawAxes();
+    for (int y = 1; y < cols; y++) {
+      for (int x = 1; x < rows; x++) {
+        if (slopeLines[y-1][x-1] != null)
+          slopeLines[y-1][x-1].display();
+      }
+    }
+    ball.display();
+    for (int i = 1; i <= level; i++)
+      ducks[i].display();
+    break;
+  }    
 }
 
 void drawAxes() {
@@ -160,6 +220,12 @@ void beginContact(Contact cp) {
   if (o1.getClass() == Ball.class && o2.getClass() == Hole.class) {
     advanceLevel = true;
   }
+  if (o1.getClass() == Ball.class && o2.getClass() == Duck.class) {
+    duckCounter++;
+    ducks[level].killBody();
+    if(duckCounter == level+1);
+      advanceLevel();
+  }
 }
 
 void endContact(Contact cp) {
@@ -182,20 +248,27 @@ public Float getSlope(String DiffEQ, float x, float y, float a, float b) {
 }
 
 void advanceLevel() {
-  hole.killBody();
-  ball.killBody();
   level++;
-  ball = new Ball(levelData[level][0].x, 5);
-  hole = new Hole(levelData[level][1], 17);
+  resetLevel();
   advanceLevel = false;
-  timePause = true;
 }
 
 void resetLevel() {
   hole.killBody();
   ball.killBody();
-  ball = new Ball(levelData[level][0].x, 5);
-  hole = new Hole(levelData[level][1], 17);
+  if (screen == Screens.CLASSIC_MODE) {
+    ball = new Ball(levelData[0][level][0][0], 5);
+    hole = new Hole(levelData[0][level][1][0], 17);
+  } 
+  
+  else if (screen == Screens.DUCK_HUNT) {
+    duckCounter = 0;
+    ball = new Ball(levelData[1][level][0][level], 5);
+    for (int i = 0; i < level; i++){
+      ducks[i].killBody();
+      ducks[i] = new Duck(levelData[1][level][i+2][0], 12);
+    }
+  }
   timePause = true;
 }
 
@@ -233,12 +306,12 @@ void keyReleased() {
     shiftPressed = true;
   if (!shiftPressed) {
     if (keyCode == DOWN) {
-      a--;
+      a = (int) a-1;
       slider1.setValue((float) Math.cbrt(a));
       generateSlopeField(DiffEQ, a, b);
     }
     if (keyCode == UP) {
-      a++;
+      a = (int) a+1;
       slider1.setValue((float) Math.cbrt(a));
       generateSlopeField(DiffEQ, a, b);
     }
@@ -259,12 +332,11 @@ void keyReleased() {
   }
 }
 
-String equationCleanup(String DiffEQ) {
-  DiffEQ.replace("ln", "logE");
+String equationCleanup(String EQ) {
+  return EQ.replaceAll("ln", "logE");
   //DiffEQ.replace("e^", "exp(");
   //DiffEQ.replaceFirst("|", "abs(");
   //DiffEQ.replaceFirst("|", ")");
-  return DiffEQ;
 }  
 
 void customGUI() {
@@ -272,7 +344,7 @@ void customGUI() {
   Duck_Hunt.setFont(new Font("Cambria", Font.BOLD, 30));
   Help.setFont(new Font("Cambria", Font.BOLD, 30));
   Classic_Mode.setFont(new Font("Cambria", Font.BOLD, 30));
-  textarea1.setFont(new Font("Arial", Font.PLAIN, 20));
+  textarea1.setFont(new Font("Arial", Font.PLAIN, 19));
   Slope_Field_Plinko_Title.setFont(new Font("Arial", Font.BOLD, 40));
   backButton.setVisible(false);
   slider1.setVisible(false);

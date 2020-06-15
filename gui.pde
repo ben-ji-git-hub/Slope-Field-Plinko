@@ -5,9 +5,9 @@
  * designer and care should be taken when editing this file.
  * Only add/edit code inside the event handlers i.e. only
  * use lines between the matching comment tags. e.g.
-
+ 
  void myBtnEvents(GButton button) { //_CODE_:button1:12356:
-     // It is safe to enter your event code here  
+ // It is safe to enter your event code here  
  } //_CODE_:button1:12356:
  
  * Do not rename this tab!
@@ -48,8 +48,15 @@ public void button1_click(GButton source, GEvent event) { //_CODE_:Classic_Mode:
   textarea1.setVisible(false);
   slider1.setVisible(true);
   slider2.setVisible(true);
+  Slope_Field_Plinko_Title.setVisible(false);
   DIFF_EQ.setVisible(true);
+  DIFF_EQ.setText("");
   screen = Screens.CLASSIC_MODE;
+  
+  timePause = true;
+  resetLevel();
+  DiffEQ = "";
+  generateSlopeField(DiffEQ, a, b);
 } //_CODE_:Classic_Mode:315825:
 
 public void button2_click(GButton source, GEvent event) { //_CODE_:Duck_Hunt:892874:
@@ -61,7 +68,14 @@ public void button2_click(GButton source, GEvent event) { //_CODE_:Duck_Hunt:892
   slider1.setVisible(true);
   slider2.setVisible(true);
   DIFF_EQ.setVisible(true);
+  Slope_Field_Plinko_Title.setVisible(false);
+  DIFF_EQ.setText("");
   screen = Screens.DUCK_HUNT;
+  
+  timePause = true;
+  resetLevel();
+  DiffEQ = "";
+  generateSlopeField(DiffEQ, a, b);
 } //_CODE_:Duck_Hunt:892874:
 
 public void textarea1_change1(GTextArea source, GEvent event) { //_CODE_:textarea1:923498:
@@ -77,7 +91,12 @@ public void backButton1_click1(GImageButton source, GEvent event) { //_CODE_:bac
   slider1.setVisible(false);
   slider2.setVisible(false);
   DIFF_EQ.setVisible(false);
-  textarea1.setText("Welcome to Slope Field Plinko, the strategic, calculus-based version of everyone's favorite game show minigame. Use your knowledge of differential equations defined in x and y to generate a slope field which will guide the plinko ball to its target! Once you select your game mode, type the differential equation into the box and watch the slope field change before your eyes! Try some familar differential equations first (y' =x, y' =x+y, y' =sin(x), for example), but don't be afraid to get creative! Theoretically, there are infinite \"particular\" solutions to every level...");
+  textarea1.setText("Welcome to Slope Field Plinko, the first strategic, calculus-based version of everyone's favorite game-show minigame. Use your knowledge differential equations defined in x and y to generate a slope field which will guide the plinko ball to its target! Once you select your game mode, type the differential equation into the box and watch the slope field change before your eyes. Try some familar differential equations first (y'=x, y'=x+y, y'=sin(x)), but don't be afraid to get creative! After all, there are theoretically infinite \"particular\" solutions for every level...  Before playing, read the equation reference to understand how to format mathematical functions in the equation field and how to use the custom variable sliders.");
+  
+  timePause = true;
+  resetLevel();
+  DiffEQ = "";
+  generateSlopeField(DiffEQ, a, b);
 } //_CODE_:backButton:932020:
 
 public void reference_click1(GButton source, GEvent event) { //_CODE_:Help:466569:
@@ -85,19 +104,17 @@ public void reference_click1(GButton source, GEvent event) { //_CODE_:Help:46656
   source.setVisible(false);
   Classic_Mode.setVisible(false);
   Duck_Hunt.setVisible(false);
-  textarea1.setVisible(false);
+  textarea1.setVisible(true);
   screen = Screens.HELP;
   slider1.setVisible(false);
   slider2.setVisible(false);
   DIFF_EQ.setVisible(false);
-  textarea1.setText("Welcome to Slope Field Plinko, the strategic, calculus-based version of everyone's favorite game show minigame. Use your knowledge of differential equations defined in x and y to generate a slope field which will guide the plinko ball to its target! Once you select your game mode, type the differential equation into the box and watch the slope field change before your eyes! Try some familar differential equations first (y' =x, y' =x+y, y' =sin(x), for example), but don't be afraid to get creative! Theoretically, there are infinite \"particular\" solutions to every level...");
+  textarea1.setText("Welcome to Slope Field Plinko, the first strategic, calculus-based version of everyone's favorite game-show minigame. Use your knowledge differential equations defined in x and y to generate a slope field which will guide the plinko ball to its target! Once you select your game mode, type the differential equation into the box and watch the slope field change before your eyes. Try some familar differential equations first (y'=x, y'=x+y, y'=sin(x)), but don't be afraid to get creative! After all, there are theoretically infinite \"particular\" solutions for every level... v Before playing, read the equation reference to understand how to format mathematical functions in the equation field and how to use the custom variable sliders.");
 } //_CODE_:Help:466569:
-
-
 
 // Create all the GUI controls. 
 // autogenerated do not edit
-public void createGUI(){
+public void createGUI() {
   G4P.messagesEnabled(false);
   G4P.setGlobalColorScheme(GCScheme.BLUE_SCHEME);
   G4P.setMouseOverEnabled(false);
@@ -131,7 +148,7 @@ public void createGUI(){
   Slope_Field_Plinko_Title.setLocalColorScheme(GCScheme.GREEN_SCHEME);
   Slope_Field_Plinko_Title.setOpaque(false);
   textarea1 = new GTextArea(this, 150, 330, 500, 300, G4P.SCROLLBARS_NONE);
-  textarea1.setText(""Welcome to Slope Field Plinko, the first strategic, calculus-based version of everyone's favorite game-show minigame. Use your knowledge differential equations defined in x and y to generate a slope field which will guide the plinko ball to its target! Once you select your game mode, type the differential equation into the box and watch the slope field change before your eyes. Try some familar differential equations first (y'=x, y'=x+y, y'=sin(x)), but don't be afraid to get creative! After all, there are theoretically infinite \"particular\" solutions for every level... Before playing, readup on the equation reference page to understand how to format mathematical functions in the equation field and how to use the variable sliders."");
+  textarea1.setText("Welcome to Slope Field Plinko, the first strategic, calculus-based version of everyone's favorite game-show minigame. Use your knowledge differential equations defined in x and y to generate a slope field which will guide the plinko ball to its target! Once you select your game mode, type the differential equation into the box and watch the slope field change before your eyes. Try some familar differential equations first (y'=x, y'=x+y, y'=sin(x)), but don't be afraid to get creative! After all, there are theoretically infinite \"particular\" solutions for every level...  Before playing, read the equation reference to understand how to format mathematical functions in the equation field and how to use the custom variable sliders.");
   textarea1.setOpaque(true);
   textarea1.addEventHandler(this, "textarea1_change1");
   backButton = new GImageButton(this, 12, 12, 30, 30, new String[] { "155-1554161_left-back-arrow-in-filled-square-button-comments.png", "155-1554161_left-back-arrow-in-filled-square-button-comments.png", "155-1554161_left-back-arrow-in-filled-square-button-comments.png" } );

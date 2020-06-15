@@ -5,27 +5,14 @@ public class Ball {
   private Body body;
   private Vec2 pos;
 
-  public Ball (float x, float r) {
+  public Ball (Vec2 pos, float r) {
       radius = r;
+      makeBody(pos, new Vec2 (0,0), r); 
+  }
   
-      BodyDef bd = new BodyDef();
-      bd.type = BodyType.DYNAMIC;
-      bd.position.set(box2d.coordPixelsToWorld(x/2, r));
-      body = box2d.world.createBody(bd);
-
-      CircleShape circle = new CircleShape();
-      
-      circle.m_radius = box2d.scalarPixelsToWorld(r/2);
-  
-      FixtureDef fd = new FixtureDef();
-      fd.shape = circle;
-  
-      fd.density = 1;
-      fd.friction = 0.9;
-      fd.restitution = .8;
-  
-      body.createFixture(fd);
-      body.setUserData(this);
+   public Ball (Vec2 pos, Vec2 vel, float r) {
+      radius = r;
+      makeBody(pos, vel, r); 
   }
 
   public void display() {
@@ -38,7 +25,31 @@ public class Ball {
       popMatrix(); 
   }
 
-  void killBody() {
+  public void killBody() {
      box2d.destroyBody(body); 
+  }
+  public void disableGravity() {
+    body.setGravityScale(0);
+  }
+  private void makeBody(Vec2 pos, Vec2 vel, float r) {
+      BodyDef bd = new BodyDef();
+      bd.type = BodyType.DYNAMIC;
+      bd.position.set(box2d.coordPixelsToWorld(pos.x/2, r));
+      body = box2d.world.createBody(bd);
+      body.setLinearVelocity(vel);
+      
+      CircleShape circle = new CircleShape();
+      
+      circle.m_radius = box2d.scalarPixelsToWorld(r/2);
+  
+      FixtureDef fd = new FixtureDef();
+      fd.shape = circle;
+  
+      fd.density = 1;
+      fd.friction = 0.9;
+      fd.restitution = .8;
+  
+      body.createFixture(fd);
+      body.setUserData(this);  
   }
 }
