@@ -79,6 +79,7 @@ public void button2_click(GButton source, GEvent event) { //_CODE_:Duck_Hunt:892
   slider1.setValue(0);
   slider2.setValue(0);
 
+  level = 0;
   DIFF_EQ.setText("");
   DiffEQ = "99999999";
   screen = Screens.DUCK_HUNT;
@@ -102,7 +103,6 @@ public void backButton1_click1(GImageButton source, GEvent event) { //_CODE_:bac
   DIFF_EQ.setVisible(false);
   tutorialText.setVisible(false);
   DIFF_EQ.setVisible(false);
-  level = 0;
 
   resetLevel(false);
   DiffEQ = "";
@@ -145,13 +145,13 @@ public void createGUI(){
   DIFF_EQ.setLocalColorScheme(GCScheme.RED_SCHEME);
   DIFF_EQ.setOpaque(false);
   DIFF_EQ.addEventHandler(this, "DIFF_EQ_changed");
-  slider1 = new GSlider(this, 100, 850, 290, 40, 10.0);
+  slider1 = new GSlider(this, 100, 850, 290, 40, 20.0);
   slider1.setLimits(0.0, -4.6415887, 4.6415887);
   slider1.setNbrTicks(999);
   slider1.setNumberFormat(G4P.DECIMAL, 2);
   slider1.setOpaque(false);
   slider1.addEventHandler(this, "slider1_change1");
-  slider2 = new GSlider(this, 410, 850, 290, 40, 10.0);
+  slider2 = new GSlider(this, 410, 850, 290, 40, 20.0);
   slider2.setLimits(0.0, -4.6415887, 4.6415887);
   slider2.setNbrTicks(999);
   slider2.setNumberFormat(G4P.DECIMAL, 2);
@@ -161,7 +161,7 @@ public void createGUI(){
   Classic_Mode.setText("Classic Mode");
   Classic_Mode.addEventHandler(this, "button1_click");
   Duck_Hunt = new GButton(this, 450, 160, 300, 150);
-  Duck_Hunt.setText("Duck Hunt");
+  Duck_Hunt.setText("Outer Space");
   Duck_Hunt.addEventHandler(this, "button2_click");
   Slope_Field_Plinko_Title = new GLabel(this, 150, 50, 500, 40);
   Slope_Field_Plinko_Title.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
