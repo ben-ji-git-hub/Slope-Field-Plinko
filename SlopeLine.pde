@@ -4,7 +4,7 @@ public class SlopeLine { //<>//
   private Vec2 pos;
   private PVector unitCircleCoord;
 
-  public SlopeLine (int xMidpoint, int yMidpoint, Float slope) {
+  public SlopeLine (int xMidpoint, int yMidpoint, Float slope, boolean duckHunt) {
     BodyDef bd = new BodyDef();
     bd.type = BodyType.STATIC;
     bd.position.set(box2d.coordPixelsToWorld(xMidpoint/2, yMidpoint/2));
@@ -28,9 +28,15 @@ public class SlopeLine { //<>//
 
     FixtureDef fd = new FixtureDef();
     fd.shape = slopeLine;
-    fd.density = 1;
-    fd.friction = .1;
-    fd.restitution = 0.1;
+    if (duckHunt) {
+      fd.density = 1;
+      fd.friction = 0;
+      fd.restitution = 1;
+    } else {
+      fd.density = .4;
+      fd.friction = .1;
+      fd.restitution = .5;
+    }
     body.createFixture(fd);
   }
 

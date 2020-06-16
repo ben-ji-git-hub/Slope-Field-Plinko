@@ -10,7 +10,7 @@ public class Duck {
     pos = position;
 
     BodyDef bd = new BodyDef();
-    bd.type = BodyType.KINEMATIC;
+    bd.type = BodyType.STATIC;
     bd.position.set(box2d.coordPixelsToWorld(pos.x/2, pos.y/2));
     body = box2d.world.createBody(bd);
 
